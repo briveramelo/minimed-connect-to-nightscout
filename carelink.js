@@ -129,18 +129,36 @@ var Client = exports.Client = function (options) {
         axiosInstance.defaults.jar.setCookieSync(`${key}=${value}`, `https://${domain}${path}`);
     }
 
-    async function doLogin() {
-        return await axiosInstance.post(
-            CARELINK_SECURITY_URL,
-            qs.stringify({
-                j_username: options.username,
-                j_password: options.password,
-                j_character_encoding: "UTF-8"
-            }));
+    function hasBearerToken()
+    {
+        let common = axiosInstance.defaults.headers.common;
+        return common && common.Authorization;
     }
 
-    async function doFetchCookie() {
-        return await axiosInstance.get(CARELINK_AFTER_LOGIN_URL);
+    async function doLoginUs() {
+        let loginResponse1 = await axiosInstance.get('https://carelink.minimed.com/patient/sso/login?country=us&lang=en'); //get clientid, code challenge
+        console.log(loginResponse1);
+        let loginResponse2 = await axiosInstance.get(loginResponse1.headers.Location); //get sessionID, sessionData
+        console.log(loginResponse2);
+        let url3 = loginResponse2.headers.Location;
+        console.log(url3);
+        let url3Params = qs.parse(url3);
+        let loginResponse3 = await axiosInstance.post('https://mdtlogin.medtronic.com/mmcl/auth/oauth/v2/authorize/login', { //get 30 min API Auth Token
+            sessionID:url3Params.sessionID,
+            sessionData:url3Params.sessionData,
+            locale:url3Params.locale,
+            countrycode:url3Params.countrycode,
+            username: options.username,
+            password: options.password
+        });
+        console.log(loginResponse3);
+        let token = loginResponse3.headers.Authorization;
+        console.log(token);
+        token = token.substring(6, token.length - 1); //Bearer <token>
+        console.log(token);
+        axiosInstance.defaults.headers.common = {
+            Authorization: `Bearer ${token}`,
+        };
     }
 
     async function doLoginEu1() {
@@ -283,10 +301,10 @@ var Client = exports.Client = function (options) {
             }
         } else {
             // US - Cookie method
-            if (!haveCookie(CARELINK_LOGIN_COOKIE)) {
+            if (!hasBearerToken()) {
                 logger.log('Logging in to CareLink');
-                let response = await doLogin()
-                await doFetchCookie(response)
+                await doLoginUs();
+                logger.log('Logged in to CareLink');
             }
         }
     }
