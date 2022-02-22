@@ -1,6 +1,6 @@
 /* jshint node: true */
 "use strict";
-
+console.log('carelink started');
 var _ = require('lodash'),
     axios = require('axios').default,
     axiosCookieJarSupport = require('axios-cookiejar-support').default,
@@ -50,7 +50,7 @@ var Client = exports.Client = function (options) {
     }
   }
   var carelinkJsonUrlNow = async function () {
-      return (1 || CARELINK_EU ? CARELINKEU_JSON_BASE_URL : CARELINK_JSON_BASE_URL) + Date.now();
+      return (CARELINK_EU ? CARELINKEU_JSON_BASE_URL : CARELINK_JSON_BASE_URL) + Date.now();
   };
     let requestCount = 0;
 
@@ -283,7 +283,7 @@ var Client = exports.Client = function (options) {
     }
 
     async function checkLogin(relogin = false) {
-        if (1 || CARELINK_EU) {
+        if (CARELINK_EU) {
             // EU - SSO method
             if (!relogin && (haveCookie(CARELINKEU_TOKEN_COOKIE) || haveCookie(CARELINKEU_TOKENEXPIRE_COOKIE))) {
                 let expire = new Date(Date.parse(_.get(getCookie(CARELINKEU_TOKENEXPIRE_COOKIE), 'value')));
