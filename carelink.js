@@ -138,9 +138,9 @@ var Client = exports.Client = function (options) {
     async function doLoginUs() {
         let loginResponse1 = await axiosInstance.get('https://carelink.minimed.com/patient/sso/login?country=us&lang=en'); //get clientid, code challenge
         console.log(loginResponse1);
-        let loginResponse2 = await axiosInstance.get(loginResponse1.headers.Location); //get sessionID, sessionData
+        let loginResponse2 = await axiosInstance.get(loginResponse1.headers.location); //get sessionID, sessionData
         console.log(loginResponse2);
-        let url3 = loginResponse2.headers.Location;
+        let url3 = loginResponse2.headers.location;
         console.log(url3);
         let url3Params = qs.parse(url3);
         let loginResponse3 = await axiosInstance.post('https://mdtlogin.medtronic.com/mmcl/auth/oauth/v2/authorize/login', { //get 30 min API Auth Token
