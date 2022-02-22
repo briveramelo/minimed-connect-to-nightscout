@@ -148,14 +148,18 @@ var Client = exports.Client = function (options) {
         let url3Params = qs.parse(url3);
         console.log('4a. url3Params');
         console.log(JSON.stringify(url3Params));
-        let loginResponse3 = await axiosInstance.post('https://mdtlogin.medtronic.com/mmcl/auth/oauth/v2/authorize/login', { //get 30 min API Auth Token
+        let loginPost = { //get 30 min API Auth Token
             sessionID:url3Params.sessionID,
             sessionData:url3Params.sessionData,
             locale:url3Params.locale,
-            countrycode:url3Params.countrycode,
+            action:'login',
             username: options.username,
-            password: options.password
-        });
+            password: options.password,
+            actionButton:'Log+in'
+        };
+        console.log('4aa. loginPost');
+        console.log(JSON.stringify(loginPost));
+        let loginResponse3 = await axiosInstance.post('https://mdtlogin.medtronic.com/mmcl/auth/oauth/v2/authorize/login', loginPost);
         console.log('4b. loginResponse3');
         console.log(loginResponse3);
         let token = loginResponse3.headers.Authorization;
