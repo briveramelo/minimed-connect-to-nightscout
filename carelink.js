@@ -137,10 +137,13 @@ var Client = exports.Client = function (options) {
 
     async function doLoginUs() {
         let loginResponse1 = await axiosInstance.get('https://carelink.minimed.com/patient/sso/login?country=us&lang=en'); //get clientid, code challenge
+        console.log('1. loginResponse1');
         console.log(loginResponse1);
         let loginResponse2 = await axiosInstance.get(loginResponse1.headers.location); //get sessionID, sessionData
+        console.log('2. loginResponse2');
         console.log(loginResponse2);
         let url3 = loginResponse2.headers.location;
+        console.log('3. url3');
         console.log(url3);
         let url3Params = qs.parse(url3);
         let loginResponse3 = await axiosInstance.post('https://mdtlogin.medtronic.com/mmcl/auth/oauth/v2/authorize/login', { //get 30 min API Auth Token
@@ -151,10 +154,13 @@ var Client = exports.Client = function (options) {
             username: options.username,
             password: options.password
         });
+        console.log('4. loginResponse3');
         console.log(loginResponse3);
         let token = loginResponse3.headers.Authorization;
+        console.log('5. token');
         console.log(token);
         token = token.substring(6, token.length - 1); //Bearer <token>
+        console.log('5. token spliced');
         console.log(token);
         axiosInstance.defaults.headers.common = {
             Authorization: `Bearer ${token}`,
