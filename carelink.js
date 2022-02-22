@@ -159,7 +159,7 @@ var Client = exports.Client = function (options) {
         };
         console.log('4aa. loginPost');
         console.log(JSON.stringify(loginPost));
-        let loginResponse3 = await axiosInstance.post('https://mdtlogin.medtronic.com/mmcl/auth/oauth/v2/authorize/login', loginPost);
+        let loginResponse3 = await axiosInstance.post('https://mdtlogin.medtronic.com/mmcl/auth/oauth/v2/authorize/login', qs.stringify(loginPost));
         console.log('4b. loginResponse3');
         console.log(loginResponse3);
         let token = loginResponse3.headers.Authorization;
